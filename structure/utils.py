@@ -6,6 +6,28 @@ class Coordinate:
 		self.x = x
 		self.y = y
 
+	def dist(self, x: int, y: int) -> int:
+		"""
+		Return the distance between 2 points.
+
+		:param x:
+		:param y:
+		:return: return the distznce
+		"""
+		return abs((self.x - x) + (self.y + y))
+
+	def __iter__(self):
+		return (self.x, self.y).__iter__()
+
+	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
+		"""
+		Returnthe location aroudn 
+
+		:return:
+		"""
+		x, y = self.x, self.y
+		return Coordinate(x + 1, y), Coordinate(x - 1, y), Coordinate(x, y + 1), Coordinate(x, y - 1)
+
 
 class Deliverie(NamedTuple):
 	@staticmethod

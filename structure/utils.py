@@ -28,7 +28,7 @@ class Coordinate:
 
 		:param x:
 		:param y:
-		:return: return the distznce
+		:return: return the distance
 		"""
 		return (self.x - x) ** 2 + (self.y - y) ** 2
 
@@ -37,9 +37,9 @@ class Coordinate:
 
 	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
 		"""
-		Returnthe location aroudn the oi
+		Return the current location around the Coordinate
 
-		:return:
+		:return: return the coordinate for each side of the point
 		"""
 		x, y = self.x, self.y
 		return self.board[x + 1, y], self.board[x - 1, y], self.board[x, y + 1], self.board[x, y - 1]

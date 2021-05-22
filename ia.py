@@ -50,6 +50,12 @@ class IA(Client):
 		return self.end_and_wait_next_turn()
 
 	def get_route_neighbor(self, coord: Coordinate):
+		"""
+		Find a route near to coord
+
+		:param coord:
+		:return: Coordinate of a road location
+		"""
 		for adj in coord.adjacent():
 			if self.map.route(adj.x, adj.y):
 				return coord

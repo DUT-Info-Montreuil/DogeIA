@@ -55,7 +55,6 @@ class Coordinate:
 		return (self.x - x) ** 2 + (self.y - y) ** 2
 
 	def __iter__(self):
-
 		return (self.x, self.y).__iter__()
 
 	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
@@ -180,4 +179,4 @@ class Biker:
 		"""
 		self.nu = nu
 		self.pos = board[x, y]
-		self.carrying = []
+		self.carrying = set()

@@ -31,7 +31,6 @@ class Board:
 
 		:return:
 		"""
-
 		self.paths = {}
 		for c1 in self.graph:
 			bfs = self.bfs2(c1)

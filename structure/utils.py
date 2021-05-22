@@ -1,7 +1,4 @@
 from typing import *
-import numpy as np
-
-from constants import BOARD_SIZE
 
 
 class Coordinate:
@@ -22,10 +19,10 @@ class Deliverie(NamedTuple):
 		args = resp.split(";")
 		return Deliverie(
 			int(args[0]),
-			float(args[2].replace(",", ".")),
-			Coordinate(int(args[3]), int(args[4])),
-			Coordinate(int(args[5]), int(args[6])),
-			int(args[7])
+			float(args[1].replace(",", ".")),
+			Coordinate(int(args[2]), int(args[3])),
+			Coordinate(int(args[4]), int(args[5])),
+			int(args[6])
 		)
 
 	code: int

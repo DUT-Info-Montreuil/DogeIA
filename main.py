@@ -1,14 +1,12 @@
 import argparse
 import time
 
-from structure.client import Client
+from ia import IA
 
 HOST = "127.0.0.1"
 PORT = 2121
 
 if __name__ == "__main__":
-
-    game_on = True
 
     # Parse arguments: python main.py <host> <port>
     parser = argparse.ArgumentParser()
@@ -24,11 +22,11 @@ if __name__ == "__main__":
     if args.w:
         time.sleep(2)
 
-    c = Client(host, port)
-    num = c.start()
-    print(f"Started as team number {num}!")
-    board = c.map
-    board.print()
+    ia = IA(host, port)
 
-    while game_on:
-        break
+    while True:
+        print("PLAYING")
+        if not ia.play():
+            break
+
+    print("END")

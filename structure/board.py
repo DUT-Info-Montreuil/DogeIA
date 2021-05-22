@@ -1,6 +1,6 @@
 import numpy as np
 
-from constants import BOARD_SIZE
+from .constants import BOARD_SIZE, ROUTE, EMPTY, HOME, SHOP
 
 
 class Board:
@@ -22,4 +22,16 @@ class Board:
 		return self.board.__iter__()
 
 	def __str__(self) -> str:
-		return "\n".join(" ".join(code for code in line) for line in self)
+		return "\n".join(" ".join(str(code) for code in line) for line in self)
+
+	def route(self, x: int, y: int) -> bool:
+		return self.board[y][x] == ROUTE
+
+	def shop(self, x: int, y: int) -> bool:
+		return self.board[y][x] == SHOP
+
+	def empty(self, x: int, y: int) -> bool:
+		return self.board[y][x] == EMPTY
+
+	def home(self, x: int, y: int) -> bool:
+		return self.board[y][x] == HOME

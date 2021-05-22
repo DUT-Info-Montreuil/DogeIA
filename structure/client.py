@@ -1,8 +1,8 @@
 import pwn
 
-from constants import *
-from structure.board import Board
-from utils import Biker, Deliverie
+from .constants import *
+from .board import Board
+from .utils import Biker, Deliverie
 
 
 class Client:
@@ -18,7 +18,13 @@ class Client:
 		"""
 		self.socket = pwn.remote(host, port)
 		self.socket.newline = TERMINATOR
-		self.id_team = 0
+		self.receive_command()
+		self.send_raw(TEAM_NAME)
+		_, id_team = self.receive_command()
+		self.id_team = int(id_team)
+		self._map = None
+		self._teams = None
+		print(f"Started as team number {self.id_team}!")
 
 	def send(self, cmd: str, *args: any) -> None:
 		"""
@@ -73,9 +79,11 @@ class Client:
 
 		:return: number of team
 		"""
-		self.send(CMD_TEAMS)
-		_, teams = self.receive_command()
-		return int(teams)
+		if self._teams is None:
+			self.send(CMD_TEAMS)
+			_, teams = self.receive_command()
+			self._teams = int(teams)
+		return self._teams
 
 	def get_bikers(self, id_team: int) -> list[Biker]:
 		"""
@@ -85,7 +93,7 @@ class Client:
 		:return: Bikers of given team
 		"""
 		self.send(CMD_GETBIKERS, id_team)
-		_, bikers_raw = self.receive_command()
+		_, *bikers_raw = self.receive_command()
 		return [Biker(*[int(attr) for attr in biker_raw.split(";")]) for biker_raw in bikers_raw]
 
 	@property
@@ -95,9 +103,11 @@ class Client:
 
 		:return: The map
 		"""
-		self.send(CMD_GETMAP)
-		cmd, board_raw = self.receive_command()
-		return Board(board_raw)
+		if self._map is None:
+			self.send(CMD_GETMAP)
+			cmd, board_raw = self.receive_command()
+			self._map = Board(board_raw)
+		return self._map
 
 	def take(self, nu_livr: int, code_command: int) -> bool:
 		self.send(CMD_TAKE, nu_livr, code_command)
@@ -117,7 +127,9 @@ class Client:
 
 	def endturn(self) -> None:
 		self.send(CMD_ENDTURN)
-		_ = self.receive_command()
+		self.receive_command()  # End turn acknowledgement
+		cmd, _ = self.receive_command()  # Wait until next turn
+		return cmd == SERVER_START
 
 	def start(self) -> int:
 		self.receive_command()

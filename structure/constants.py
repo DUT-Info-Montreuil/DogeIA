@@ -11,6 +11,11 @@ MAP = {
 	'S': 2
 }
 
+ROUTE = 0
+EMPTY = 1
+HOME = 2
+SHOP = 3
+
 DIR_TOP = "T"
 DIR_BOTTOM = "B"
 DIR_RIGHT = "R"

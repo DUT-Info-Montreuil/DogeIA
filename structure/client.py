@@ -48,8 +48,8 @@ class Client:
 
 	def receive_command(self) -> list[str]:
 		"""
-		Method to receive
-		:return:
+		Method to receive a server-side command
+		:return: The command itself
 		"""
 		msg = self.socket.recvline(keepends=False).decode()
 		print(" - Received message \"{}\" from server".format(msg))
@@ -110,28 +110,57 @@ class Client:
 		return self._map
 
 	def take(self, nu_livr: int, code_command: int) -> bool:
+		"""
+		Method to make the biker take a command from a restaurant
+
+		:param nu_livr:
+		:param code_command:
+		:return: If he took the command or not
+		"""
 		self.send(CMD_TAKE, nu_livr, code_command)
 		cmd, = self.receive_command()
 		return cmd == SERVER_OK
 
 	def deliver(self, nu_livr: int, code_command: int) -> bool:
+		"""
+		Method to make the biker deliver the command to the house
+
+		:param nu_livr:
+		:param code_command:
+		:return: If the command was receved by the recipient or not
+		"""
 		self.send(CMD_DELIVER, nu_livr, code_command)
 		cmd, = self.receive_command()
 		return cmd == SERVER_OK
 
 	@property
 	def deliveries(self) -> list[Deliverie]:
-		self.send(CMD_DELIVER)
-		cmd, deliveries_raw = self.receive_command()
+		"""
+		Method to get all the available commands on the board
+
+		:return: A list of availables deliveries
+		"""
+		self.send(CMD_GETDELIVERIES)
+		cmd, *deliveries_raw = self.receive_command()
 		return [Deliverie.from_raw(deliverie_raw) for deliverie_raw in deliveries_raw]
 
-	def endturn(self) -> None:
+	def end_and_wait_next_turn(self) -> bool:
+		"""
+		Method to end the turn when there is no PA left and waitfor the next turn with the team's ID
+
+		:return: When you stare at the void...
+		"""
 		self.send(CMD_ENDTURN)
 		self.receive_command()  # End turn acknowledgement
 		cmd, _ = self.receive_command()  # Wait until next turn
 		return cmd == SERVER_START
 
 	def start(self) -> int:
+		"""
+		Method to start the game, initialize the team's name and receive the team's ID
+
+		:return: The id of our team
+		"""
 		self.receive_command()
 		self.send_raw(TEAM_NAME)
 		_, id_team = self.receive_command()

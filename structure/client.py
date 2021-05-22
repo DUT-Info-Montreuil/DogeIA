@@ -15,6 +15,7 @@ class Client:
 		"""
 		self.socket = pwn.remote(host, port)
 		self.socket.newline = TERMINATOR
+		pwn.context.log_level = "info"
 		self.receive_command()
 		self.send_raw(TEAM_NAME)
 		_, id_team = self.receive_command()
@@ -22,7 +23,7 @@ class Client:
 		self._map = None
 		self._teams = None
 		self._bikers = {}
-		print(f"Started as team number {self.id_team}!")
+		pwn.log.info(f"Started as team number {self.id_team}!")
 
 	def send(self, cmd: str, *args: any) -> None:
 		"""
@@ -42,7 +43,7 @@ class Client:
 		:return: Nothing has been returned....
 		"""
 		self.socket.sendline(msg.encode())
-		print(" - Sent \"{}\" to server".format(msg))
+		pwn.log.info(f"Sent \"{msg}\" to server")
 
 	def receive_command(self) -> list[str]:
 		"""
@@ -50,11 +51,12 @@ class Client:
 		:return: The command itself
 		"""
 		msg = self.socket.recvline(keepends=False).decode()
-		print(" - Received message \"{}\" from server".format(msg))
+		pwn.log.info(f"Received message \"{msg}\" from server")
 		cmd, *args = msg.split(SEPARATOR)
-		print(" - Received command \"{}\" with args [{}] from server".format(cmd, ", ".join(args)))
+		joined_args = ", ".join(args)
+		pwn.log.info(f"Received command \"{cmd}\" with args [{joined_args}] from server")
 		if cmd == SERVER_NOK:
-			print(" - WARNING: Received a NOK command from server!\n" + SEPARATOR.join(args))
+			pwn.log.warn(f"Received a NOK command from server!\n{SEPARATOR.join(args)}")
 		return [cmd, *args]
 
 	def move(self, biker_number: int, direction: str) -> bool:
@@ -67,7 +69,7 @@ class Client:
 		:return: Possibility of movement
 		"""
 		self.send(CMD_MOVE, biker_number, direction)
-		cmd, = self.receive_command()
+		cmd, *_ = self.receive_command()
 		return cmd == SERVER_OK
 
 	@property
@@ -93,13 +95,13 @@ class Client:
 		self.send(CMD_GETBIKERS, id_team)
 		_, *bikers_raw = self.receive_command()
 		for biker_raw in bikers_raw:
-			id, x, y = [int(attr) for attr in biker_raw.split(";")]
-			if id in self._bikers:
-				biker = self._bikers[id]
+			id_, x, y = [int(attr) for attr in biker_raw.split(";")]
+			if id_ in self._bikers:
+				biker = self._bikers[id_]
 				biker.pos.x = x
 				biker.pos.y = y
 			else:
-				self._bikers[id] = Biker(self._map, id, x, y)
+				self._bikers[id_] = Biker(self._map, id_, x, y)
 		return self._bikers
 
 	@property
@@ -124,7 +126,7 @@ class Client:
 		:return: If he took the command or not
 		"""
 		self.send(CMD_TAKE, nu_livr, code_command)
-		cmd, = self.receive_command()
+		cmd, *_ = self.receive_command()
 		return cmd == SERVER_OK
 
 	def deliver(self, nu_livr: int, code_command: int) -> bool:
@@ -136,7 +138,7 @@ class Client:
 		:return: If the command was receved by the recipient or not
 		"""
 		self.send(CMD_DELIVER, nu_livr, code_command)
-		cmd, = self.receive_command()
+		cmd, *_ = self.receive_command()
 		return cmd == SERVER_OK
 
 	@property
@@ -158,7 +160,7 @@ class Client:
 		"""
 		self.send(CMD_ENDTURN)
 		self.receive_command()  # End turn acknowledgement
-		cmd, _ = self.receive_command()  # Wait until next turn
+		cmd, *_ = self.receive_command()  # Wait until next turn
 		return cmd == SERVER_START
 
 	def start(self) -> int:

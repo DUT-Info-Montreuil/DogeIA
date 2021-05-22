@@ -107,6 +107,13 @@ class Coordinate:
 		return ""
 
 	def next_in_direction(self, direction: str) -> Optional["Coordinate"]:
+		"""
+		Returns the next location in the same direction.
+
+		:param direction:
+		:return: a coordinate
+		"""
+
 		if direction == DIR_TOP:
 			return self.board[self.x - 1, self.y]
 		elif direction == DIR_BOTTOM:

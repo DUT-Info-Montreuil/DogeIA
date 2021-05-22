@@ -103,6 +103,13 @@ class Board:
 		return shortest_path, delivery_near
 
 	def nearest_delivery_to_depose(self, deliveries: list[Delivery], coord: Coordinate) -> Tuple[Optional[str], Optional[Delivery]]:
+		"""
+		Returns the shortest_path in order to deliver the nearest delivery from a location.
+
+		:param deliveries:
+		:param coord:
+		:return: a path
+		"""
 		shortest_path = None
 		delivery_near = None
 		for delivery in deliveries:
@@ -175,11 +182,23 @@ class Board:
 		return tile is not None and tile.content == HOME
 
 	def clear_bfs(self):
+		"""
+		Erase the a path from the bfs.
+
+		:return:
+		"""
 		for coord in self.content:
 			coord.marked = False
 			coord.next = None
 
 	def bfs(self, pos: Coordinate) -> None:
+		"""
+		Builds a path to pos.
+
+		:param pos:
+		:return:
+		"""
+
 		self.clear_bfs()
 		q: Queue[Coordinate] = Queue()
 		pos.marked = True

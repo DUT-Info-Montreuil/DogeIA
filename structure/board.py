@@ -16,7 +16,7 @@ class Board:
 
 	def print(self) -> None:
 		"""
-		Display board
+		Displays the board
 		"""
 		print(self)
 

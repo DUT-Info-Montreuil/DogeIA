@@ -6,9 +6,6 @@ from .utils import Biker, Deliverie
 
 
 class Client:
-	"""
-	Represent a client connected to the server
-	"""
 	def __init__(self, host: str, port: int) -> None:
 		"""
 		Initialize Client class and setup socket
@@ -111,7 +108,7 @@ class Client:
 
 	def take(self, nu_livr: int, code_command: int) -> bool:
 		"""
-		Method to make the biker take a command from a restaurant
+		The biker takes a command from a restaurant
 
 		:param nu_livr:
 		:param code_command:
@@ -123,7 +120,7 @@ class Client:
 
 	def deliver(self, nu_livr: int, code_command: int) -> bool:
 		"""
-		Method to make the biker deliver the command to the house
+		The biker delivers the command to the house
 
 		:param nu_livr:
 		:param code_command:
@@ -146,7 +143,7 @@ class Client:
 
 	def end_and_wait_next_turn(self) -> bool:
 		"""
-		Method to end the turn when there is no PA left and waitfor the next turn with the team's ID
+		Ends the turn when there is no PA left and waitfor the next turn that matches the team's ID
 
 		:return: When you stare at the void...
 		"""
@@ -157,7 +154,7 @@ class Client:
 
 	def start(self) -> int:
 		"""
-		Method to start the game, initialize the team's name and receive the team's ID
+		Starts the game, initializes the team's name and receive it's ID
 
 		:return: The id of our team
 		"""

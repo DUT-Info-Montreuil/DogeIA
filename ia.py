@@ -1,4 +1,8 @@
 from structure.client import *
+from structure.utils import Coordinate
+from pathfinding.finder.best_first import BestFirst
+from pathfinding.core.grid import Grid
+from pathfinding.core.diagonal_movement import DiagonalMovement
 
 
 class IA(Client):

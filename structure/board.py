@@ -7,10 +7,12 @@ class Board:
 	def __init__(self, data) -> None:
 		"""
 		Initialization of the Board Class
+
 		:param data:
 		"""
 		data = data.translate(str.maketrans("REHS", "0312"))
 		self.board = np.array([[int(a) for a in data[i:i + BOARD_SIZE]] for i in range(0, BOARD_SIZE * BOARD_SIZE, BOARD_SIZE)])
+		self.bikers = []
 
 	def print(self) -> None:
 		"""

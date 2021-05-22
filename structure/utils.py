@@ -9,7 +9,7 @@ class Coordinate:
 
 class Deliverie(NamedTuple):
 	@staticmethod
-	def from_raw(resp: str) -> 'Deliverie':
+	def from_raw(resp: str) -> "Deliverie":
 		"""
 		Static method to
 

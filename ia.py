@@ -28,7 +28,7 @@ class IA(Client):
 			time_limit=float("inf"),
 			max_runs=float("inf")
 		)
-		path, runs = finder.find_path(start=grid.node(x=bikers[0].x, y=bikers[1].y), end=grid.node(x, y), grid=grid)
+		path, runs = finder.find_path(start=grid.node(bikers[0].x, bikers[1].y), end=grid.node(x, y), grid=grid)
 
 
 

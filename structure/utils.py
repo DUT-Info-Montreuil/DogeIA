@@ -15,10 +15,11 @@ class Deliverie(NamedTuple):
 	def from_raw(resp: str) -> 'Deliverie':
 		"""
 		Static method to
+
 		:param resp:
 		:return:
 		"""
-		args = resp.split(",")
+		args = resp.split(";")
 		return Deliverie(
 			int(args[0]),
 			float(args[2].replace(",", ".")),

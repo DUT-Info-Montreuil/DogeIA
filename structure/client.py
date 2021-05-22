@@ -1,4 +1,3 @@
-import numpy as np
 import pwn
 
 from constants import *
@@ -27,8 +26,7 @@ class Client:
 
 		:param cmd:
 		:param args:
-		:return:
-		VOID IS WATCHING
+		:return: VOID IS WATCHING
 		"""
 		self.send_raw(SEPARATOR.join([cmd, *[str(arg) for arg in args]]))
 
@@ -37,8 +35,7 @@ class Client:
 		Method to send a message
 
 		:param msg:
-		:return:
-		Nothing has been returned....
+		:return: Nothing has been returned....
 		"""
 		self.socket.sendline(msg.encode())
 		print(" - Sent \"{}\" to server".format(msg))
@@ -63,8 +60,7 @@ class Client:
 		:param delivery_number:
 		:param direction:
 
-		:return:
-		Possibility of movement
+		:return: Possibility of movement
 		"""
 		self.send(CMD_MOVE, delivery_number, direction)
 		cmd, = self.receive_command()
@@ -75,8 +71,7 @@ class Client:
 		"""
 		Method to get the number of own team
 
-		:return:
-		number of team
+		:return: number of team
 		"""
 		self.send(CMD_TEAMS)
 		_, teams = self.receive_command()
@@ -94,7 +89,7 @@ class Client:
 		return [Biker(*[int(attr) for attr in biker_raw.split(";")]) for biker_raw in bikers_raw]
 
 	@property
-	def map(self) -> np.ndarray[int]:
+	def map(self) -> Board:
 		"""
 		Method that returns the map of the game
 

@@ -1,12 +1,10 @@
 import argparse
 import time
 
-from network import *
+from structure.client import Client
 
 HOST = "127.0.0.1"
 PORT = 2121
-TEAM_NAME = "DogeTeam"
-BOARD_SIZE = 31
 
 if __name__ == "__main__":
 
@@ -26,34 +24,11 @@ if __name__ == "__main__":
     if args.w:
         time.sleep(2)
 
-    c = Connection(host, port)
-    cmd, = c.receive_command()
-    if cmd == ServerCmd.NAME:
-        c.send_raw(TEAM_NAME)
-    else:
-        print("PAS ouf")
-
-    num = -1
-    wait = True
-    while wait:
-        cmd, num = c.receive_command()
-        if cmd == ServerCmd.START:
-            wait = False
-        else:
-            print("WARNING: Received another message ({}) before START!".format(cmd))
-
-    print("Started as team number {}!".format(num))
-    c.send(Cmd.GETMAP)
-    cmd, board_raw = c.receive_command()
-    board = [[" " for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
-    for y in range(BOARD_SIZE):
-        for x in range(BOARD_SIZE):
-            board[y][x] = board_raw[y * BOARD_SIZE + x]
-
-    for y in range(BOARD_SIZE):
-        for x in range(BOARD_SIZE):
-            print(board[y][x], end=" ")
-        print()
+    c = Client(host, port)
+    num = c.start()
+    print(f"Started as team number {num}!")
+    board = c.map
+    board.print()
 
     while game_on:
         break

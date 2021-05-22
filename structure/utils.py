@@ -55,7 +55,6 @@ class Coordinate:
 		return (self.x - x) ** 2 + (self.y - y) ** 2
 
 	def __iter__(self):
-
 		return (self.x, self.y).__iter__()
 
 	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
@@ -108,6 +107,13 @@ class Coordinate:
 		return ""
 
 	def next_in_direction(self, direction: str) -> Optional["Coordinate"]:
+		"""
+		Returns the next location in the same direction.
+
+		:param direction:
+		:return: a coordinate
+		"""
+
 		if direction == DIR_TOP:
 			return self.board[self.x - 1, self.y]
 		elif direction == DIR_BOTTOM:
@@ -180,4 +186,4 @@ class Biker:
 		"""
 		self.nu = nu
 		self.pos = board[x, y]
-		self.carrying = []
+		self.carrying = set()

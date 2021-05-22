@@ -10,6 +10,7 @@ class IA(Client):
 		super().__init__(host, port)
 		self.turn = 0
 		self.bikers = None
+		self.biker = None
 
 	def play(self) -> bool:
 		"""
@@ -24,30 +25,27 @@ class IA(Client):
 		deliveries = self.deliveries
 		# others_bikers = [self.get_bikers(id_) for id_ in range(self.teams) if id_ != self.id_team]
 
-		biker = self.bikers[0]
 		actions = ACTION_POINTS
 		while actions > 0:
-			pos = biker.pos
-			if len(biker.carrying) == 0:
+			if self.biker is None or len(self.biker.carrying) == 0:
 				# We find the closest delivery to take from the deliveries list
-				path, delivery = board.nearest_delivery_to_take(deliveries, pos)
-				if path is None:
+				biker1 = self.bikers[0]
+				biker2 = self.bikers[1]
+				pos1 = biker1.pos
+				pos2 = biker2.pos
+				path1, delivery1 = board.nearest_delivery_to_take(deliveries, pos1)
+				path2, delivery2 = board.nearest_delivery_to_take(deliveries, pos2)
+				if path2 is None or (path1 is not None and len(path1) <= len(path2)):
+					self.biker, path, delivery = biker1, path1, delivery1
+				elif path1 is None or (path2 is not None and len(path2) <= len(path1)):
+					self.biker, path, delivery = biker2, path2, delivery2
+				else:
 					return self.end_and_wait_next_turn()
 				shop = True
-
-				# board.bfs(pos)
-				# closest = None
-				# min_height = 0
-				# for delivery in deliveries:
-				# 	height = delivery.coord_restaurant.bfs_height()
-				# 	if closest is None or height <= min_height:
-				# 		closest = delivery
-				# 		min_height = height
-				# dest = closest.coord_restaurant
-			elif len(biker.carrying) < 3:
+			elif len(self.biker.carrying) < 3:
 				# We find the closest delivery to take from the deliveries list OR to deliver from the biker's backpack
-				path_take, delivery_take = board.nearest_delivery_to_take(deliveries, pos)
-				path_depose, delivery_depose = board.nearest_delivery_to_depose(biker.carrying, pos)
+				path_take, delivery_take = board.nearest_delivery_to_take(deliveries, self.biker.pos)
+				path_depose, delivery_depose = board.nearest_delivery_to_depose(self.biker.carrying, self.biker.pos)
 				if path_take is None or (path_depose is not None and len(path_depose) < len(path_take)):
 					path, delivery = path_depose, delivery_depose
 					shop = False
@@ -56,53 +54,32 @@ class IA(Client):
 					shop = True
 				else:
 					return self.end_and_wait_next_turn()
-
-				# board.bfs(pos)
-				# closest = None
-				# min_height = 0
-				# maison = False
-				# for delivery in deliveries + biker.carrying:
-				# 	height = delivery.coord_restaurant.bfs_height()
-				# 	if closest is None or height <= min_height:
-				# 		closest = delivery
-				# 		min_height = height
-				# 		maison = False
-				# 	height = delivery.coord_maison.bfs_height()
-				# 	if closest is None or height <= min_height and delivery in biker.carrying:
-				# 		closest = delivery
-				# 		min_height = height
-				# 		maison = True
-				# if maison:
-				# 	dest = closest.coord_maison
-				# 	delivery = biker.carrying[0]
-				# else:
-				# 	dest = closest.coord_restaurant
 			else:
 				# We find the closest delivery to deliver from the biker's backpack
-				path, delivery = board.nearest_delivery_to_depose(biker.carrying, pos)
+				path, delivery = board.nearest_delivery_to_depose(self.biker.carrying, self.biker.pos)
 				if path is None:
 					return self.end_and_wait_next_turn()
 				shop = False
 
-			print(pos, path, delivery.coord_restaurant)
-			if len(path):
+			if path:
 				dir_ = path[0]
-				self.move(biker.nu, dir_)
-				biker.pos = pos.next_in_direction(dir_)
+				self.move(self.biker.nu, dir_)
+				self.biker.pos = self.biker.pos.next_in_direction(dir_)
 			elif shop:
-				self.take(biker.nu, delivery.code)
-				biker.carrying.append(delivery)
-				for delivery in deliveries:
-					if delivery.coord_restaurant == next \
-							and delivery not in biker.carrying \
-							and len(biker.carrying) < 3 \
-							and actions > 1:
-						self.take(biker.nu, delivery.code)
-						biker.carrying.append(delivery)
-						actions -= 1
+				self.take(self.biker.nu, delivery.code)
+				self.biker.carrying.add(delivery)
+				deliveries.remove(delivery)
+				# for delivery in deliveries:
+				# 	if delivery.coord_restaurant == next \
+				# 			and delivery not in self.biker.carrying \
+				# 			and len(self.biker.carrying) < 3 \
+				# 			and actions > 1:
+				# 		self.take(self.biker.nu, delivery.code)
+				# 		self.biker.carrying.append(delivery)
+				# 		actions -= 1
 			else:
-				self.deliver(biker.nu, delivery.code)
-				biker.carrying.remove(delivery)
+				self.deliver(self.biker.nu, delivery.code)
+				self.biker.carrying.remove(delivery)
 
 			actions -= 1
 

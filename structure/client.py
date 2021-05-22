@@ -15,7 +15,7 @@ class Client:
 		"""
 		self.socket = pwn.remote(host, port)
 		self.socket.newline = TERMINATOR
-		pwn.context.log_level = "info"
+		pwn.context.log_level = "warn"
 		self.receive_command()
 		self.send_raw(TEAM_NAME)
 		_, id_team = self.receive_command()

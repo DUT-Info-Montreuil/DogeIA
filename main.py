@@ -16,7 +16,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     host = args.host
     port = args.port
-    print(host, port)
 
     # Wait for server to be launched
     if args.w:
@@ -25,8 +24,5 @@ if __name__ == "__main__":
     ia = IA(host, port)
 
     while True:
-        print("PLAYING")
         if not ia.play():
             break
-
-    print("END")

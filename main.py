@@ -1,30 +1,32 @@
 import argparse
-import pwn
+import time
+
+from ia import IA
 
 HOST = "127.0.0.1"
-PORT = 12345
+PORT = 2121
 
 if __name__ == "__main__":
-
-    game_on = True
 
     # Parse arguments: python main.py <host> <port>
     parser = argparse.ArgumentParser()
     parser.add_argument("host", default=HOST)
     parser.add_argument("port", default=PORT, type=int)
+    parser.add_argument("-w", default=False, type=bool, nargs="?", const=True)
     args = parser.parse_args()
     host = args.host
     port = args.port
     print(host, port)
 
-    # Connect to remote server
-    r = pwn.remote(host, port)
-    # Send a request to server
-    r.send("GET /\r\n\r\n")
+    # Wait for server to be launched
+    if args.w:
+        time.sleep(2)
 
-    # Receive the response
-    data = r.recvall()
-    print(data.decode())
+    ia = IA(host, port)
 
-    while game_on:
-        break
+    while True:
+        print("PLAYING")
+        if not ia.play():
+            break
+
+    print("END")

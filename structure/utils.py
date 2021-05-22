@@ -28,7 +28,7 @@ class Coordinate:
 
 	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
 		"""
-		Returnthe location aroudn the
+		Returnthe location aroudn the oi
 
 		:return:
 		"""

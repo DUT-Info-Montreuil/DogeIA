@@ -4,17 +4,17 @@ TERMINATOR = "\r\n"
 TEAM_NAME = "DogeTeam"
 BOARD_SIZE = 31
 
-MAP = {
-	'R': 0,
-	'E': 3,
-	'H': 1,
-	'S': 2
-}
-
 ROUTE = 0
 EMPTY = 1
 HOME = 2
 SHOP = 3
+
+MAP = {
+	'R': ROUTE,
+	'E': EMPTY,
+	'H': HOME,
+	'S': SHOP
+}
 
 DIR_TOP = "T"
 DIR_BOTTOM = "B"

@@ -1,6 +1,8 @@
-import numpy as np
+from queue import Queue
+from typing import *
 
-from .constants import BOARD_SIZE, ROUTE, EMPTY, HOME, SHOP
+from .constants import BOARD_SIZE, ROUTE, EMPTY, HOME, SHOP, MAP
+from .utils import Coordinate
 
 
 class Board:
@@ -10,21 +12,27 @@ class Board:
 
 		:param data:
 		"""
-		data = data.translate(str.maketrans("REHS", "0312"))
-		self.board = np.array([[int(a) for a in data[i:i + BOARD_SIZE]] for i in range(0, BOARD_SIZE * BOARD_SIZE, BOARD_SIZE)])
+		self.board = []
+		for x in range(BOARD_SIZE):
+			for y in range(BOARD_SIZE):
+				self.board.append(Coordinate(x, y, self, int(MAP[data[x * BOARD_SIZE + y]])))
 		self.bikers = []
+
+	def __getitem__(self, pos: tuple[int, int]) -> Optional[Coordinate]:
+		x = pos[0]
+		y = pos[1]
+		if x < 0 or x >= BOARD_SIZE or y < 0 or y >= BOARD_SIZE:
+			return None
+		return self.board[x * BOARD_SIZE + y]
 
 	def print(self) -> None:
 		"""
 		Displays the board
 		"""
-		print(self)
-
-	def __iter__(self):
-		return self.board.__iter__()
-
-	def __str__(self) -> str:
-		return "\n".join(" ".join(str(code) for code in line) for line in self)
+		for x in range(BOARD_SIZE):
+			for y in range(BOARD_SIZE):
+				print(self[x, y].content, end=" ")
+			print()
 
 	def route(self, x: int, y: int) -> bool:
 		"""
@@ -34,7 +42,8 @@ class Board:
 		:param y:
 		:return: a boolean
 		"""
-		return self.board[y][x] == ROUTE
+		tile = self[x, y]
+		return tile is not None and tile.content == ROUTE
 
 	def shop(self, x: int, y: int) -> bool:
 		"""
@@ -44,7 +53,8 @@ class Board:
 		:param y:
 		:return: a boolean
 		"""
-		return self.board[y][x] == SHOP
+		tile = self[x, y]
+		return tile is not None and tile.content == SHOP
 
 	def empty(self, x: int, y: int) -> bool:
 		"""
@@ -54,7 +64,8 @@ class Board:
 		:param y:
 		:return: a boolean
 		"""
-		return self.board[y][x] == EMPTY
+		tile = self[x, y]
+		return tile is not None and tile.content == EMPTY
 
 	def home(self, x: int, y: int) -> bool:
 		"""
@@ -64,4 +75,26 @@ class Board:
 		:param y:
 		:return: a boolean
 		"""
-		return self.board[y][x] == HOME
+		tile = self[x, y]
+		return tile is not None and tile.content == HOME
+
+	def clear_bfs(self):
+		for coord in self.board:
+			coord.marked = False
+			coord.next = None
+
+	def bfs(self, pos: Coordinate) -> None:
+		self.clear_bfs()
+		q: Queue[Coordinate] = Queue()
+		pos.marked = True
+		q.put(pos)
+
+		while not q.empty():
+			c = q.get()
+			while True:
+				d = c.unmarked_adjacent()
+				if d is None:
+					break
+				d.marked = True
+				d.next = c
+				q.put(d)

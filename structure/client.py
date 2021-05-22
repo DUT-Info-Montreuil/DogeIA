@@ -2,7 +2,7 @@ import pwn
 
 from .constants import *
 from .board import Board
-from .utils import Biker, Deliverie
+from .utils import Biker, Delivery
 
 
 class Client:
@@ -21,6 +21,7 @@ class Client:
 		self.id_team = int(id_team)
 		self._map = None
 		self._teams = None
+		self._bikers = {}
 		print(f"Started as team number {self.id_team}!")
 
 	def send(self, cmd: str, *args: any) -> None:
@@ -56,16 +57,16 @@ class Client:
 			print(" - WARNING: Received a NOK command from server!\n" + SEPARATOR.join(args))
 		return [cmd, *args]
 
-	def move(self, delivery_number: int, direction: str) -> bool:
+	def move(self, biker_number: int, direction: str) -> bool:
 		"""
 		Method to move a given biker into a given direction
 
-		:param delivery_number:
+		:param biker_number:
 		:param direction:
 
 		:return: Possibility of movement
 		"""
-		self.send(CMD_MOVE, delivery_number, direction)
+		self.send(CMD_MOVE, biker_number, direction)
 		cmd, = self.receive_command()
 		return cmd == SERVER_OK
 
@@ -82,7 +83,7 @@ class Client:
 			self._teams = int(teams)
 		return self._teams
 
-	def get_bikers(self, id_team: int) -> list[Biker]:
+	def get_bikers(self, id_team: int) -> dict[int, Biker]:
 		"""
 		Method that returns the bikers of a given team
 
@@ -91,7 +92,15 @@ class Client:
 		"""
 		self.send(CMD_GETBIKERS, id_team)
 		_, *bikers_raw = self.receive_command()
-		return [Biker(*[int(attr) for attr in biker_raw.split(";")]) for biker_raw in bikers_raw]
+		for biker_raw in bikers_raw:
+			id, x, y = [int(attr) for attr in biker_raw.split(";")]
+			if id in self._bikers:
+				biker = self._bikers[id]
+				biker.pos.x = x
+				biker.pos.y = y
+			else:
+				self._bikers[id] = Biker(self._map, id, x, y)
+		return self._bikers
 
 	@property
 	def map(self) -> Board:
@@ -131,7 +140,7 @@ class Client:
 		return cmd == SERVER_OK
 
 	@property
-	def deliveries(self) -> list[Deliverie]:
+	def deliveries(self) -> list[Delivery]:
 		"""
 		Method to get all the available commands on the board
 
@@ -139,7 +148,7 @@ class Client:
 		"""
 		self.send(CMD_GETDELIVERIES)
 		cmd, *deliveries_raw = self.receive_command()
-		return [Deliverie.from_raw(deliverie_raw) for deliverie_raw in deliveries_raw]
+		return [Delivery.from_raw(self._map, deliverie_raw) for deliverie_raw in deliveries_raw]
 
 	def end_and_wait_next_turn(self) -> bool:
 		"""

@@ -1,8 +1,5 @@
 from structure.client import *
 from structure.utils import Coordinate
-from pathfinding.finder.best_first import BestFirst
-from pathfinding.core.grid import Grid
-from pathfinding.core.diagonal_movement import DiagonalMovement
 
 
 class IA(Client):
@@ -14,24 +11,41 @@ class IA(Client):
 
 	def play(self) -> bool:
 		board = self.map
-		deliveries = self.deliveries
+		# board.print()
+		# others_bikers = [self.get_bikers(id_) for id_ in range(self.teams) if id_ != self.id_team]
+
 		bikers = self.get_bikers(self.id_team)
-		others_bikers = [self.get_bikers(id_) for id_ in range(self.teams) if id_ != self.id_team]
+		biker = bikers[0]
+		for i in range(8):
+			deliveries = self.deliveries
+			if len(biker.carrying) == 0:
+				board.bfs(biker.pos)
+				closest = None
+				min_height = 0
+				for delivery in deliveries:
+					height = delivery.coord_restaurant.bfs_height()
+					if closest is None or height <= min_height:
+						closest = delivery
+						min_height = height
+				dest = closest.coord_restaurant
+			else:
+				delivery = biker.carrying[0]
+				dest = delivery.coord_maison
 
-		delivery = min(deliveries, key=lambda d: d.coord_restaurant.dist(0, 0))
-		x, y = self.get_route_neighbor(delivery.coord_restaurant)
-		grid = Grid(matrix=self.map)
-		finder = BestFirst(
-			heuristic=None,
-			weight=31,
-			diagonal_movement=DiagonalMovement.never,
-			time_limit=float("inf"),
-			max_runs=float("inf")
-		)
-		path, runs = finder.find_path(start=grid.node(bikers[0].x, bikers[1].y), end=grid.node(x, y), grid=grid)
-
-
-
+			# print(dest)
+			board.bfs(dest)
+			pos = biker.pos
+			next = pos.next
+			if next.content == ROUTE:
+				# print(pos, next)
+				self.move(biker.nu, pos.direction(next))
+				biker.pos = next
+			elif next.content == SHOP:
+				self.take(biker.nu, closest.code)
+				biker.carrying.append(closest)
+			elif next.content == HOME:
+				self.deliver(biker.nu, delivery.code)
+				biker.carrying.remove(delivery)
 
 		return self.end_and_wait_next_turn()
 
@@ -40,10 +54,6 @@ class IA(Client):
 			if self.map.route(adj.x, adj.y):
 				return coord
 		return None
-
-
-
-
 
 
 

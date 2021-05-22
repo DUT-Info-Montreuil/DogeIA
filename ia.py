@@ -27,11 +27,19 @@ class IA(Client):
 
 		actions = ACTION_POINTS
 		while actions > 0:
-			pos = biker.pos
-			if len(biker.carrying) == 0:
+			if self.biker is None or len(self.biker.carrying) == 0:
 				# We find the closest delivery to take from the deliveries list
-				path, delivery = board.nearest_delivery_to_take(deliveries, pos)
-				if path is None:
+				biker1 = self.bikers[0]
+				biker2 = self.bikers[1]
+				pos1 = biker1.pos
+				pos2 = biker2.pos
+				path1, delivery1 = board.nearest_delivery_to_take(deliveries, pos1)
+				path2, delivery2 = board.nearest_delivery_to_take(deliveries, pos2)
+				if path2 is None or (path1 is not None and len(path1) <= len(path2)):
+					self.biker, path, delivery = biker1, path1, delivery1
+				elif path1 is None or (path2 is not None and len(path2) <= len(path1)):
+					self.biker, path, delivery = biker2, path2, delivery2
+				else:
 					return self.end_and_wait_next_turn()
 				shop = True
 			elif len(self.biker.carrying) < 3:

@@ -27,13 +27,41 @@ class Board:
 		return "\n".join(" ".join(str(code) for code in line) for line in self)
 
 	def route(self, x: int, y: int) -> bool:
+		"""
+		return true if (x,y) is the location of a road
+
+		:param x:
+		:param y:
+		:return: a boolean
+		"""
 		return self.board[y][x] == ROUTE
 
 	def shop(self, x: int, y: int) -> bool:
+		"""
+		return true if (x,y) is the location of a shop
+
+		:param x:
+		:param y:
+		:return: a boolean
+		"""
 		return self.board[y][x] == SHOP
 
 	def empty(self, x: int, y: int) -> bool:
+		"""
+		return true if (x,y) is an empty the location
+
+		:param x:
+		:param y:
+		:return: a boolean
+		"""
 		return self.board[y][x] == EMPTY
 
 	def home(self, x: int, y: int) -> bool:
+		"""
+		return true if (x,y) is the location of a home
+
+		:param x:
+		:param y:
+		:return: a boolean
+		"""
 		return self.board[y][x] == HOME

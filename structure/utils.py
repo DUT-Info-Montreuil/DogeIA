@@ -3,6 +3,13 @@ from typing import *
 
 class Coordinate:
 	def __init__(self, x: int, y: int) -> None:
+		"""
+		Initializes Coordinate
+
+		:param x:
+		:param y:
+		:return: none
+		"""
 		self.x = x
 		self.y = y
 
@@ -21,7 +28,7 @@ class Coordinate:
 
 	def adjacent(self) -> tuple["Coordinate", "Coordinate", "Coordinate", "Coordinate"]:
 		"""
-		Returnthe location aroudn 
+		Returnthe location aroudn the
 
 		:return:
 		"""
@@ -56,6 +63,14 @@ class Deliverie(NamedTuple):
 
 class Biker:
 	def __init__(self, nu: int, x: int, y: int) -> None:
+		"""
+		Inititalizes the biker
+
+		:param nu:
+		:param x:
+		:param y:
+		:return: none
+		"""
 		self.nu = nu
 		self.x = x
 		self.y = y

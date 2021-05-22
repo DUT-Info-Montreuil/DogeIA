@@ -1,5 +1,7 @@
 from typing import *
 
+from .constants import *
+
 
 class Coordinate:
 	def __init__(self, x: int, y: int, board=None, content: int = -1) -> None:
@@ -41,6 +43,36 @@ class Coordinate:
 		"""
 		x, y = self.x, self.y
 		return self.board[x + 1, y], self.board[x - 1, y], self.board[x, y + 1], self.board[x, y - 1]
+
+	def unmarked_adjacent(self):
+		for adj in self.adjacent():
+			if adj is not None and not adj.marked and adj.content == ROUTE:
+				return adj
+		return None
+
+	def bfs_height(self):
+		if self.next is None:
+			return 0
+		return 1 + self.next.bfs_height()
+
+	def __eq__(self, other) -> bool:
+		if isinstance(self, Coordinate):
+			return self.x == other.x and self.y == other.y
+		return NotImplemented
+
+	def direction(self, other: "Coordinate") -> str:
+		if self.x == other.x and self.y < other.y:
+			return DIR_RIGHT
+		elif self.x == other.x and self.y > other.y:
+			return DIR_LEFT
+		elif self.x < other.x and self.y == other.y:
+			return DIR_BOTTOM
+		elif self.x > other.x and self.y == other.y:
+			return DIR_TOP
+		return ""
+
+	def __str__(self):
+		return f"{self.x};{self.y}"
 
 
 class Delivery(NamedTuple):
